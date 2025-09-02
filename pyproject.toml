@@ -1,0 +1,199 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flexolmo"
+dynamic = ["version"]
+readme = "README.md"
+description = "FlexOLMo"
+authors = [
+    { name = "Allen Institute for Artificial Intelligence", email = "olmo@allenai.org" }
+]
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+dependencies = [
+    "numpy",
+    "torch>=2.6.0",
+    "cached-path",
+    "requests",
+    "packaging",
+    "rich",
+    "omegaconf",
+    "safetensors",
+    "importlib_resources",
+]
+
+[project.urls]
+Homepage = "https://github.com/allenai/flexolmo"
+Documentation = "https://flexolmo.readthedocs.io/en/latest/"
+Changelog = "https://github.com/allenai/flexolmo/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "mypy>=1.0,<1.16",
+    "black>=23.1,<26.0",
+    "isort>=5.12,<6.1",
+    "pytest",
+    "pytest-sphinx",
+    "pytest-xdist",
+    "twine>=1.11.0",
+    "setuptools",
+    "wheel",
+    "build",
+    "boto3",
+    "google-cloud-storage",
+    "Sphinx>=6.0,<7.0.2",
+    "furo==2023.5.20",
+    "myst-parser>=1.0,<4.1",
+    "sphinx-copybutton==0.5.2",
+    "sphinx-autobuild==2021.3.14",
+    "sphinx-autodoc-typehints==1.23.3",
+]
+beaker = [
+    "beaker-py>=1.32.3,<2.0",
+    "beaker-gantry",
+    "GitPython>=3.0,<4.0",
+]
+wandb = [
+    "wandb",
+]
+train = [
+    "ai2-olmo-core@git+https://github.com/allenai/OLMo-core@ecb14e03f9e5f7374b81cc9f924fd13a4b2482f2",
+    "huggingface-hub>=0.27.1",
+    "torchao==0.9.0",
+    "torchvision==0.21.0",
+    "protobuf==5.29.4"
+]
+eval = [
+    "ai2-olmes@git+https://github.com/allenai/olmes@4f04122642bcee6d74393ec2ecfb0e572a64da53",
+    "s3fs",
+    "smart-open",
+    "torchvision",
+    "prettytable"
+]
+embeddings =[
+    "gritlm",
+    "sentence_transformers",
+    "s3fs",
+    "smart-open",
+]
+extraction = [
+    "transformers@git+https://github.com/swj0419/transformers",
+    "accelerate",
+    "rank_bm25",
+    "s3fs",
+    "smart-open",
+    "strsimpy",
+    "psutil",
+    "platformdirs",
+    "zstandard",
+    "torchvision"
+]
+all = [
+    "flexolmo[dev,beaker,wandb,train,eval,embeddings,extraction]",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+flexolmo = ["py.typed", "*.txt"]
+
+[tool.setuptools.dynamic]
+version = { attr = "flexolmo.version.VERSION" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["flexolmo*"]
+exclude = []
+
+[tool.black]
+line-length = 100
+include = '\.pyi?$'
+exclude = '''
+(
+      __pycache__
+    | \.git
+    | \.mypy_cache
+    | \.pytest_cache
+    | \.vscode
+    | \.venv
+    | \bdist\b
+    | \bdoc\b
+    | scratch/
+)
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.ruff]
+line-length = 115
+
+[tool.ruff.lint]
+ignore = ["F403", "F405", "E501"]
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".venv",
+    "venv",
+    ".mypy_cache",
+    "__pycache__",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "doc",
+    "pretrain_data",
+    "inference",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F401"]
+
+[tool.pyright]
+reportPrivateImportUsage = false
+
+[tool.mypy]
+ignore_missing_imports = true
+no_site_packages = true
+check_untyped_defs = true
+no_namespace_packages = true
+disable_error_code = "has-type"
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+strict_optional = false
+
+[tool.pytest.ini_options]
+testpaths = "tests/"
+python_classes = [
+  "Test*",
+  "*Test",
+]
+log_format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+log_level = "DEBUG"
+log_cli = false
+log_cli_level = "DEBUG"
+markers = [
+    "gpu",
+]
+filterwarnings = [
+    'ignore::FutureWarning:huggingface_hub\.file_download',
+    'ignore::DeprecationWarning:pkg_resources',
+    'ignore::DeprecationWarning:google\.rpc',
+    'ignore::FutureWarning:torch\.distributed\.checkpoint\.default_planner',
+]
